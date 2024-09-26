@@ -1,36 +1,4 @@
 
-
-export const quacks = [
-  {
-    quack_id: 1, 
-    user_id: 2,
-    created_at: new Date(),
-    content: "quack from user 2",
-    media_url: "https://avatars.githubusercontent.com/u/68473548?v=4",
-  },
-  {
-    quack_id: 3, 
-    user_id: 4,
-    created_at: new Date(),
-    content: "quack from user 4",
-    media_url: "",
-  },
-  {
-    quack_id: 5, 
-    user_id: 6,
-    created_at: new Date(),
-    content: "quack from user 6",
-    media_url: "https://avatars.githubusercontent.com/u/68473548?v=4",
-  },
-  {
-    quack_id: 7, 
-    user_id: 8,
-    created_at: new Date(),
-    content: "quack from user 8",
-    media_url: null,
-  },
-];
-
 export const users = [
     {
         name: "",
@@ -70,6 +38,30 @@ export const users = [
     }
 ]
 
+
+export const quacks = [
+  {
+    user_id: 2,
+    content: "quack from user 2",
+    media_url: "https://avatars.githubusercontent.com/u/68473548?v=4",
+  },
+  {
+    user_id: 4,
+    content: "quack from user 4",
+    media_url: "",
+  },
+  {
+    user_id: 6,
+    content: "quack from user 6",
+    media_url: "https://avatars.githubusercontent.com/u/68473548?v=4",
+  },
+  { 
+    user_id: 8,
+    content: "quack from user 8",
+    media_url: null,
+  },
+];
+
 export const relationships = [
     {
         follower_id: 2,
@@ -97,5 +89,9 @@ export const likes = [
     {
         user_id: 6,
         quack_id: 5,
+    },
+    {
+        user_id: 8,
+        quack_id: 1,
     }
 ]

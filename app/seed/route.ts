@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import { db } from "@vercel/postgres";
-import { likes, quacks, relationships, users } from "../lib/placeholder-data";
+import { db, QueryResultRow } from "@vercel/postgres";
+import { quacks, users } from "../lib/placeholder-data";
 const client = await db.connect();
 
 async function seedUsers() {
@@ -18,21 +18,25 @@ async function seedUsers() {
         );
     `;
 
-  const insertedUsers = await Promise.all(
+  await Promise.all(
     users.map(async (user) => {
       const hashedPassword = await bcrypt.hash(user.password_digest, 10);
       return client.sql`
                 INSERT INTO users (name, email, password_digest, slug, avatar, bio)
                 VALUES (${user.name}, ${user.email}, ${hashedPassword}, ${user.slug}, ${user.avatar}, ${user.bio})
-                ON CONFLICT (slug) DO NOTHING
                 ON CONFLICT (email) DO NOTHING;
             `;
     })
   );
-  return insertedUsers;
+  const { rows: userRows } = await client.sql`SELECT user_id, email FROM users`;
+  const userIdMap = userRows.reduce((map, user) => {
+    map[user.email] = user.user_id;
+    return map;
+  }, {})
+  return userIdMap
 }
 
-async function seedQuacks() {
+async function seedQuacks(userIdMap: QueryResultRow) {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await client.sql`
         CREATE TABLE IF NOT EXISTS quacks (
@@ -47,21 +51,27 @@ async function seedQuacks() {
   await client.sql`
     CREATE INDEX IF NOT EXISTS idx_quacks_user_id ON quacks (user_id);
     CREATE INDEX IF NOT EXISTS idx_quacks_created_at ON quacks (created_at);
-    CREATE INDEX IF NOT EXISTS idx_quacks_created_at_10_days ON quacks (created_at) WHERE created_at >= NOW() - INTERVAL '10 days';
     `;
-  const insertedQuacks = await Promise.all(
+  await Promise.all(
     quacks.map(async (quack) => {
+      const user_id = userIdMap[quack.content]
       return client.sql`
                 INSERT INTO quacks (user_id, content, media_url)
-                VALUES (${quack.user_id}, ${quack.content}, ${quack.media_url})
+                VALUES (${user_id}, ${quack.content}, ${quack.media_url})
                 ON CONFLICT (user_id, content, media_url) DO NOTHING;
             `;
     })
   );
-  return insertedQuacks;
+  const { rows: quackRows } = await client.sql`SELECT quack_id, content FROM quacks`;
+  const quackIdMap = quackRows.reduce((map, quack) => {
+    map[quack.content] = quack.quack_id;
+    return map;
+  }, {});
+
+  return quackIdMap;
 }
 
-async function seedRelationships() {
+async function seedRelationships(userIdMap: QueryResultRow) {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await client.sql`
         CREATE TABLE IF NOT EXISTS relationships (
@@ -76,11 +86,19 @@ async function seedRelationships() {
         CREATE INDEX IF NOT EXISTS idx_relationships_follower_id ON relationships (follower_id);
         CREATE INDEX IF NOT EXISTS idx_relationships_followee_id ON relationships (followee_id);
     `;
+
+  const relationships = [
+    { follower: "myemail1@example.com", followee: "myemail2@example.com" },
+    { follower: "myemail3@example.com", followee: "myemail1@example.com" },
+    { follower: "myemail2@example.com", followee: "myemail3@example.com" },
+  ];
   const insertedRelationships = await Promise.all(
     relationships.map(async (relationship) => {
+      const follower_id = userIdMap[relationship.follower];
+      const followee_id = userIdMap[relationship.followee]
       return client.sql`
                 INSERT INTO relationships (follower_id, followee_id)
-                VALUES (${relationship.follower_id}, ${relationship.followee_id})
+                VALUES (${follower_id}, ${followee_id})
                 ON CONFLICT (follower_id, followee_id) DO NOTHING;
             `;
     })
@@ -88,7 +106,7 @@ async function seedRelationships() {
   return insertedRelationships;
 }
 
-async function seedLikes() {
+async function seedLikes(userIdMap: QueryResultRow, quackIdMap: QueryResultRow) {
   await client.sql`
         CREATE TABLE IF NOT EXISTS likes (
             like_id SERIAL PRIMARY KEY,
@@ -110,7 +128,7 @@ async function seedLikes() {
             INSERT INTO likes_count (quack_id, like_count)
             VALUES (NEW.quack_id, COALESCE((SELECT like_count FROM likes_count WHERE quack_id = NEW.quack_id), 0) +1)
             ON CONFLICT (quack_id) DO UPDATE SET like_count = like_count + 1;
-        ELSEIF TG_OP = 'DELETE' THEN
+        ELSIF TG_OP = 'DELETE' THEN
             UPDATE likes_count
             SET like_count = like_count - 1
             WHERE quack_id = OLD.quack_id;
@@ -126,30 +144,38 @@ async function seedLikes() {
     FOR EACH ROW
     EXECUTE FUNCTION update_like_count();
 `;
-  const insertedLikes = await Promise.all(
+
+const likes = [
+  { user: "myemail1@example.com", content: "quack from user 2" },
+  { user: "myemail3@example.com", content: "quack from user 4" },
+  { user: "myemail2@example.com", content: "quack from user 6" },
+];
+  await Promise.all(
     likes.map(async (like) => {
+      const user_id = userIdMap[like.user];
+      const quack_id = quackIdMap[like.content];
       return client.sql`
                 INSERT INTO likes (user_id, quack_id)
-                VALUES (${like.user_id}, ${like.quack_id})
+                VALUES (${user_id}, ${quack_id})
                 ON CONFLICT (user_id, quack_id) DO NOTHING;
             `;
     })
   );
-  return insertedLikes;
 }
 
 export async function GET() {
-    try {
-        await client.sql`BEGIN`;
-        await seedUsers();
-        await seedQuacks();
-        await seedRelationships();
-        await seedLikes();
-        await client.sql`COMMIT`;
+  try {
+    await client.sql`BEGIN`;
+    const userIdMap = await seedUsers();
+    const quackIdMap = await seedQuacks(userIdMap);
+    await seedRelationships(userIdMap);
+    await seedLikes(userIdMap, quackIdMap);
+    await client.sql`COMMIT`;
 
-        return Response.json({ message: 'Database seeded successfully' });
-    } catch (error) {
-      await client.sql`ROLLBACK`;
-      return Response.json({ error }, { status: 500 });
-    }
+    return Response.json({ message: "Database seeded successfully" });
+  } catch (error) {
+    console.error("Seeding error: ", error);
+    await client.sql`ROLLBACK`;
+    return Response.json({ error }, { status: 500 });
+  }
 }

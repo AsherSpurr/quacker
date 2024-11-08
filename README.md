@@ -1,6 +1,5 @@
-## This is a work in progress!
+### This is a work in progress!
 ### The goal of this project is not to save time but to learn a lot of new tech.
-## Getting Started
 
 # Project Goals
 - Use Next.js to gain experience with Server Side Rendering and better SEO
@@ -10,6 +9,9 @@
 - Migrate to use RDS for database management
 - Migrate to Amazon's EC2 for improved scalability
 - Learn about request throttling, caching, content delivery networks (CDN's), and load balancing
+
+
+
 
 First, run the development server:
 

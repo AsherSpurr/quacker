@@ -1,7 +1,7 @@
 ### This is a work in progress!
 ### The goal of this project is not to save time but to learn a lot of new tech.
 
-# Project Goals
+# Project Goals - Twitter(x) clone
 - Use Next.js to gain experience with Server Side Rendering and better SEO
 - Build out more complex databases using PostgreSQL
 - Gain experience with serverless architecture

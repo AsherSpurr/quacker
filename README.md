@@ -13,10 +13,15 @@
 
 ### To see the current version
 
-```git clone git@github.com:Ringworm-Relief/rr-frontend.git
-cd rr-frontend
+```git clone git@github.com:AsherSpurr/quacker.git
+cd quacker
 pnpm install
 npm run dev```
+**NOTE Node must be version 20 or higher**
+To install Node
+```nvm install <version>```
+To use specific version
+```nvm use <version>```
 
 
 Run the development server:

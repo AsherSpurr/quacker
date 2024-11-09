@@ -11,11 +11,15 @@
 - **In Progress** Learn about request throttling, caching, content delivery networks (CDN's), and load balancing
 
 
-### To see current version
+### To see the current version
+
+```git clone git@github.com:Ringworm-Relief/rr-frontend.git
+cd rr-frontend
+pnpm install
+npm run dev```
 
 
-
-First, run the development server:
+Run the development server:
 
 ```bash
 npm run dev

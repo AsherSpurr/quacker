@@ -13,7 +13,8 @@
 
 ### To see the current version
 
-```git clone git@github.com:AsherSpurr/quacker.git
+```
+git clone git@github.com:AsherSpurr/quacker.git
 cd quacker
 pnpm install
 npm run dev

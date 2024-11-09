@@ -29,5 +29,5 @@ To use specific version
 ```nvm use <version>```
 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) or the specified address in the terminal window with your browser to see the result.
 

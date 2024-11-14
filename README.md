@@ -1,4 +1,4 @@
-### This is a work in progress in the very early stages!
+### ⭐️This is a work in progress in the very early stages!⭐️
 ### The goal of this project is not to save time but to learn a lot of new tech.
 
 # Project Goals, learn a little about a lot - Twitter(x) clone 

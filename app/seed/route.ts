@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { db, QueryResultRow } from "@vercel/postgres";
 import { quacks, users } from "../lib/placeholder-data";
-import {  NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 const client = await db.connect();
 
 async function seedUsers() {
@@ -29,15 +29,15 @@ async function seedUsers() {
                   ON CONFLICT (email) DO NOTHING;
               `;
       } catch (error: any) {
-        if (error.code === '23505') {
-          return {message: 'An account with this email already exists'}
+        if (error.code === "23505") {
+          return { message: "An account with this email already exists" };
         }
       }
     })
   );
   const { rows: userRows } = await client.sql`SELECT user_id, email FROM users`;
   const userIdMap = userRows.reduce((map, user) => {
-    map[user.email] = user.user_id; 
+    map[user.email] = user.user_id;
     return map;
   }, {});
   return userIdMap;
@@ -68,7 +68,8 @@ async function seedQuacks(userIdMap: QueryResultRow) {
             `;
     })
   );
-  const { rows: quackRows } = await client.sql`SELECT quack_id, content FROM quacks`;
+  const { rows: quackRows } =
+    await client.sql`SELECT quack_id, content FROM quacks`;
   const quackIdMap = quackRows.reduce((map, quack) => {
     map[quack.content] = quack.quack_id;
     return map;
@@ -112,7 +113,10 @@ async function seedRelationships(userIdMap: QueryResultRow) {
   return insertedRelationships;
 }
 
-async function seedLikes(userIdMap: QueryResultRow, quackIdMap: QueryResultRow) {
+async function seedLikes(
+  userIdMap: QueryResultRow,
+  quackIdMap: QueryResultRow
+) {
   await client.sql`
         CREATE TABLE IF NOT EXISTS likes (
             like_id SERIAL PRIMARY KEY,
@@ -129,9 +133,12 @@ async function seedLikes(userIdMap: QueryResultRow, quackIdMap: QueryResultRow) 
     );
 `;
   await client.sql`
+    DROP TRIGGER IF EXISTS update_like_count_trigger ON likes;
+    DROP FUNCTION IF EXISTS update_like_count;
+    
     CREATE OR REPLACE FUNCTION update_like_count() RETURNS TRIGGER AS $$
     BEGIN
-        IF TG_OP = 'INSERT' THEN
+        IF TG_OP = 'INSERT' THEN 
             INSERT INTO likes_count (quack_id, like_count)
             VALUES (NEW.quack_id, COALESCE((SELECT lc.like_count FROM likes_count lc WHERE lc.quack_id = NEW.quack_id), 0) +1)
             ON CONFLICT (quack_id) DO UPDATE SET like_count = likes_count.like_count + 1;
@@ -152,13 +159,13 @@ async function seedLikes(userIdMap: QueryResultRow, quackIdMap: QueryResultRow) 
     `;
 
   const likes = [
-    { user: "myemail1@example.com", quack: "quack from user 2" },
-    { user: "myemail3@example.com", quack: "quack from user 4" },
+    { email: "myemail1@example.com", quack: "quack from user 2" },
+    { email: "myemail3@example.com", quack: "quack from user 4" },
   ];
 
   await Promise.all(
     likes.map(async (like) => {
-      const user_id = userIdMap[like.user];
+      const user_id = userIdMap[like.email];
       const quack_id = quackIdMap[like.quack];
       return client.sql`
                 INSERT INTO likes (user_id, quack_id)
@@ -176,11 +183,11 @@ export async function GET() {
     const quackIdMap = await seedQuacks(userIdMap);
     await seedRelationships(userIdMap);
     await seedLikes(userIdMap, quackIdMap);
-    return NextResponse.json({ message: 'Database seeded successfully' })
+    return NextResponse.json({ message: "Database seeded successfully" });
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error("Error seeding database:", error);
     return NextResponse.json(
-      { error: 'Failed to seed database' },
+      { error: "Failed to seed database" },
       { status: 500 }
     );
   } finally {

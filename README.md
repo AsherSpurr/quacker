@@ -1,16 +1,17 @@
 ### ⭐️This is a work in progress in the very early stages!⭐️
 ### The goal of this project is not to save time but to learn a lot of new tech and concepts.
 
-# What is the current progress?
+# What is the current roadmap?
 - ✅ Build out a rudimentary front-end to get some experience with Next
 - ✅ Create the database schema using drawsql
 - ✅ Create fundamental tables and functions necessary to the DB and seed with data
-- 📍 Migrate front-end to fetch seeded data instead of placeholder data
-- 📍 Circle back to front-end to add to and restructure as needed - adding some functionality
+- 📍 Circle back to front-end to add to and restructure as needed - adding some functionality with mock data
 - 📍 Add feeds and feeds_quacks tables
+- 📍 Migrate front-end to fetch seeded data instead of mock data
 - 📍 Implement Redis once some functionality is in place
 - ⭐️ Pause and assess the current state. Make decisions about CDN's, if an algorithm will be used for feed/which one, React Native, type of load balancing (since using Next), which AWS to use first, etc.
-- 📍 Next steps based on this assessment 
+- 📍 Add login - ideally using Oauth
+- 📍 Next steps based on previous assessment 
 
 # Why are we using certain tech?
 The decision to use certain tech was purely based on learning goals.

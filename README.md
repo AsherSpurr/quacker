@@ -1,5 +1,5 @@
 ### ⭐️This is a work in progress in the very early stages!⭐️
-### The goal of this project is not to save time but to learn a lot of new tech.
+### The goal of this project is not to save time but to learn a lot of new tech and concepts.
 
 # What is the current progress?
 - ✅ Build out a rudimentary front-end to get some experience with Next

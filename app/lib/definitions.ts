@@ -15,7 +15,7 @@ export type User = {
 export type Quack = {
     quack_id: number, 
     user_id: number,
-    created_at: Date,
+    created_at: string, // Need to change DB?? How to store a date
     content: string,
     media_url: string | null, //change back to string
 }

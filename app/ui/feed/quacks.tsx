@@ -1,28 +1,40 @@
 "use client";
-import { quacks } from "../../lib/placeholder-data";
+import { fetchQuacks } from "../../lib/data";
 import Image, { StaticImageData } from "next/image";
 import {
   ChatBubbleBottomCenterIcon,
   HeartIcon,
   ArrowPathRoundedSquareIcon
 } from "@heroicons/react/24/outline";
+import { Quack } from "../../lib/definitions";
+import { useEffect, useState } from "react";
 
 export default function QuackWrapper() {
   //add profile image
   //name + username
   //post timestamp
-  const quacksData = quacks;
+  const [quacksData, setQuacksData] = useState<Quack[]>([]);
+
+  useEffect(() => {
+    const getQuacksData = async () => {
+      const data = await fetchQuacks();
+      console.log(data)
+      setQuacksData(data); 
+    };
+
+    getQuacksData(); 
+  }, []); 
   return (
     <>
-      {quacksData.map((quack) => {
+      {quacksData.map((quack: Quack) => {
         return (
-          <Quack
-            key={quack.id}
-            name={quack.name}
-            userName={quack.userName}
-            timeStamp={quack.timeStamp}
+          <Quacks
+            key={quack.quack_id}
+            quack_id={quack.quack_id}
+            user_id={quack.user_id}
+            created_at={quack.created_at}
             content={quack.content}
-            avatar={quack.avatar}
+            media_url={quack.media_url}
           />
         );
       })}
@@ -30,32 +42,32 @@ export default function QuackWrapper() {
   );
 }
 
-export function Quack({
-  name,
-  userName,
-  timeStamp,
+export function Quacks({
+  quack_id,
+  user_id,
+  created_at,
   content,
-  avatar,
+  media_url
 }: {
-  name: string;
-  userName: string;
-  timeStamp: string;
-  content: string;
-  avatar: StaticImageData;
+  quack_id: number,
+  user_id: number,
+  created_at: string,
+  content: string,
+  media_url: string | null;
 }) {
   return (
     <div className="rounded-xl bg-gradient-to-br from-yellow-400 to-blue-500 p-4 shadow-sm">
       <div className="flex flex-col p-4">
-        <Image
+        {/* <Image
           src={avatar}
           className="rounded-full"
           width={40}
           height={40}
           alt="avatar"
-        />
-        <h3 className="text-xl font-bold text-white">{name}</h3>
-        <p>{userName}</p>
-        <p>{timeStamp}</p>
+        /> */}
+        {/* <h3 className="text-xl font-bold text-white">{name}</h3> */}
+        {/* <p>{userName}</p> */}
+        <p>{created_at}</p>
         <p className="text-white">{content}</p>
         <div className="flex flex-row items-center justify-around ">
           <button

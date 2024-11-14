@@ -1,5 +1,5 @@
 "use client";
-import { quacks } from "@/app/lib/placeholder-data";
+import { quacks } from "../../lib/placeholder-data";
 import Image, { StaticImageData } from "next/image";
 import {
   ChatBubbleBottomCenterIcon,

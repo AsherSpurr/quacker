@@ -1,5 +1,5 @@
-import Form from "@/app/ui/feed/form";
-import Quacks from "@/app/ui/feed/quacks";
+import Form from "../../ui/feed/form";
+import Quacks from "../../ui/feed/quacks";
 import React from "react";
 
 export default async function Page() {

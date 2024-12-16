@@ -17,7 +17,7 @@ export default function QuackWrapper() {
 
   useEffect(() => {
     const getQuacksData = async () => {
-      const data = await fetchQuacks();
+      const data = await fetchQuacks('84caebab-ea4a-4a38-9836-9e080aabc639');
       console.log(data)
       setQuacksData(data); 
     };

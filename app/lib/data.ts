@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres";
 import { Quack } from "./definitions";
+
 // import pg from 'pg';
 
 // const { Pool } = pg;
@@ -16,7 +17,7 @@ import { Quack } from "./definitions";
 //Update this function to only show quacks from following list
 export async function fetchQuacks(userId: string) {
     try {
-        const data = await sql<Quack>`
+        const {rows} = await sql<Quack>`
             SELECT *
             FROM quacks q
             INNER JOIN relationships r
@@ -24,7 +25,7 @@ export async function fetchQuacks(userId: string) {
             WHERE r.follower_id = ${userId} OR q.user_id = ${userId}
             ORDER BY q.created_at DESC;
         `;
-        return data.rows;
+        return rows;
     } catch (error){
         throw new Error(`Failed to fetch Quacks. ${error}`) //Update for better error handling
     }

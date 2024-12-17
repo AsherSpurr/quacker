@@ -1,36 +1,10 @@
-
-import { fetchQuacks } from "../../lib/data";
+"use client"
 import Image, { StaticImageData } from "next/image";
 import {
   ChatBubbleBottomCenterIcon,
   HeartIcon,
   ArrowPathRoundedSquareIcon
 } from "@heroicons/react/24/outline";
-import { Quack } from "../../lib/definitions";
-
-export default async function QuackWrapper() {
-  //add profile image
-  //name + username
-  //post timestamp
-  const data = await fetchQuacks('84caebab-ea4a-4a38-9836-9e080aabc639');
-
-  return (
-    <>
-      {data.map((quack: Quack) => {
-        return (
-          <Quacks
-            key={quack.quack_id}
-            quack_id={quack.quack_id}
-            user_id={quack.user_id}
-            created_at={quack.created_at}
-            content={quack.content}
-            media_url={quack.media_url}
-          />
-        );
-      })}
-    </>
-  );
-}
 
 export function Quacks({
   quack_id,
@@ -45,6 +19,8 @@ export function Quacks({
   content: string,
   media_url: string | null;
 }) {
+    const formattedDate = new Date(created_at).toLocaleString(); // Move this to utils file and move to fucntion
+
   return (
     <div className="rounded-xl bg-gradient-to-br from-yellow-400 to-blue-500 p-4 shadow-sm">
       <div className="flex flex-col p-4">
@@ -57,7 +33,7 @@ export function Quacks({
         /> */}
         {/* <h3 className="text-xl font-bold text-white">{name}</h3> */}
         {/* <p>{userName}</p> */}
-        <p>{created_at}</p>
+        <p>{formattedDate}</p>
         <p className="text-white">{content}</p>
         <div className="flex flex-row items-center justify-around ">
           <button

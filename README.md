@@ -5,7 +5,7 @@
 - ✅ Build out a rudimentary front-end to get some experience with Next
 - ✅ Create the database schema using drawsql
 - ✅ Create fundamental tables and functions necessary to the DB and seed with data
-- 📍 Circle back to front-end to add to and restructure as needed - adding some functionality with mock data
+- 📍 Circle back to front-end to add to and restructure as needed - adding some functionality with mock data as needed
 - 📍 Add feeds and feeds_quacks tables
 - 📍 Migrate front-end to fetch seeded data instead of mock data
 - 📍 Implement Redis once some functionality is in place

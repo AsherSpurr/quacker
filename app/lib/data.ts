@@ -1,18 +1,6 @@
 import { sql } from "@vercel/postgres";
-import { Quack } from "./definitions";
-// import pg from 'pg';
+import { Quack, Relationships } from "./definitions";
 
-// const { Pool } = pg;
-
-// const db_session = new Pool({
-//   connectionString: process.env.POSTGRES_URL,
-// })
-// db_session.connect()
-//     .then(() => console.log('Connected to PostgreSQL database'))
-//     .catch(err => console.error('Connection error', err.stack));
-// export async function fetchUser(id: string) {
-
-// }
 //Update this function to only show quacks from following list
 export async function fetchQuacks(userId: string) {
     try {
@@ -21,7 +9,7 @@ export async function fetchQuacks(userId: string) {
             FROM quacks q
             INNER JOIN relationships r
                 ON r.followee_id = q.user_id
-            WHERE r.follower_id = ${userId} OR q.user_id = ${userId}
+            WHERE r.follower_id = ${userId}
             ORDER BY q.created_at DESC;
         `;
         return data.rows;
@@ -29,3 +17,20 @@ export async function fetchQuacks(userId: string) {
         throw new Error(`Failed to fetch Quacks. ${error}`) //Update for better error handling
     }
 }
+
+export async function updateRelationships(followee_id: any, follower_id: any) {
+    try {
+        const data = await sql<Relationships>`
+            INSERT INTO relationships (followee_id, follower_id)
+                VALUES (${followee_id}, ${follower_id})
+                ON CONFLICT (follower_id, followee_id)
+                DO NOTHING
+            RETURNING *
+        `;
+        return data.rows;
+    } catch (error){
+        throw new Error(`Failed to complete. ${error}`) // Remove throw
+    }
+}
+
+// updateRelationships('84caebab-ea4a-4a38-9836-9e080aabc639', '0728b9ce-f89a-4232-a1a1-82ec7fb60371')

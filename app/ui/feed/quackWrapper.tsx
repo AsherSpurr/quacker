@@ -7,7 +7,9 @@ export default async function QuackWrapper() {
   //add profile image
   //name + username
   //post timestamp
-  const data = await fetchQuacks('84caebab-ea4a-4a38-9836-9e080aabc639');
+
+  // When login is completed update the userID argument in fetchQuacks
+  const data = await fetchQuacks('0728b9ce-f89a-4232-a1a1-82ec7fb60371');
 
   return (
     <>

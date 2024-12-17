@@ -1,4 +1,4 @@
-"use client";
+
 import { fetchQuacks } from "../../lib/data";
 import Image, { StaticImageData } from "next/image";
 import {
@@ -7,26 +7,16 @@ import {
   ArrowPathRoundedSquareIcon
 } from "@heroicons/react/24/outline";
 import { Quack } from "../../lib/definitions";
-import { useEffect, useState } from "react";
 
-export default function QuackWrapper() {
+export default async function QuackWrapper() {
   //add profile image
   //name + username
   //post timestamp
-  const [quacksData, setQuacksData] = useState<Quack[]>([]);
+  const data = await fetchQuacks('84caebab-ea4a-4a38-9836-9e080aabc639');
 
-  useEffect(() => {
-    const getQuacksData = async () => {
-      const data = await fetchQuacks('84caebab-ea4a-4a38-9836-9e080aabc639');
-      console.log(data)
-      setQuacksData(data); 
-    };
-
-    getQuacksData(); 
-  }, []); 
   return (
     <>
-      {quacksData.map((quack: Quack) => {
+      {data.map((quack: Quack) => {
         return (
           <Quacks
             key={quack.quack_id}
